@@ -1,0 +1,58 @@
+#================================================
+# General Parameters 
+#================================================
+traits:
+ - Lung_CFU_wt
+ - Spleen_CFU_wt
+scan_what:
+ - eigentraits 
+traits_scaled:
+ - true
+traits_normalized:
+ - true
+eig_which:
+ - 1
+ - 2 
+pval_correction:
+ - fdr 
+use_kinship:
+ - false
+kinship_type:
+ - ltco
+pop:
+ - 2PP
+locus:
+ - char
+save_results:
+ - true
+use_saved_results:
+ - true
+transform_to_phenospace:
+ - true
+#================================================
+# Single Scan Parameters 
+#================================================
+ref_allele:
+ - A 
+singlescan_perm:
+ - 0
+
+#================================================
+# Marker Selection Parameters 
+#================================================
+marker_selection_method:
+ - top_effects
+peak_density:
+ - 0.5 
+tolerance:
+ - 5 
+num_alleles_in_pairscan:
+ - 100
+#================================================
+# Pairscan Parameters 
+#================================================
+max_pair_cor:
+ - 1
+pairscan_null_size:
+ - 10000
+
