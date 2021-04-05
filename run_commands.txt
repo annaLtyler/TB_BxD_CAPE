@@ -1,0 +1,4 @@
+
+
+R -e "rmarkdown::render(here::here('Documents', 'BxD_CAPE.Rmd'))"
+
