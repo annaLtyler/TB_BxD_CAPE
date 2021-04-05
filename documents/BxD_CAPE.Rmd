@@ -60,7 +60,7 @@ Source all the code used in the project
 scale.pheno <- TRUE
 remove.outlier <- TRUE
 high.var.pheno.only = FALSE #whether to include only high-variance traits in the analysis
-include.genetic.markers = FALSE
+include.genetic.markers = TRUE
 ```
 
 ```{r source_code, error = FALSE, warning = FALSE, message = FALSE}
