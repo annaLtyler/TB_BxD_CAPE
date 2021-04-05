@@ -1,0 +1,241 @@
+---
+title: "Continuous CAPE in the BxD"
+author: Anna L Tyler
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document:
+    code_folding: hide
+    collapsed: no
+    toc: yes
+    toc_float: yes
+---
+
+
+## Introduction
+
+The purpose of this workflow is to explore the possibility of using
+CAPE with continuous variables to look for interactions between
+TnSeq mutants, or between TnSeq mutants and mouse gneotypes that 
+influence clinical traits.
+
+
+## Data
+
+The data used here are from Clare Smith's lab at Duke. The experiment 
+here used 19 strains of BXD mice. 
+
+There were 2-5 replicates of each strain. They all started with 5, but 
+some died. 
+
+Each strain was infected with a library of Mtb mutants that contained
+100,000 knockout strains. We call this library the TnSeq library.
+Theoretically, each bug contains a single knockout. These strains are 
+combined into a single library covering the entire Mtb genome. These 
+strains compete with each other in the host to replicate. 
+
+One month after injection, the mice were harvested, the organs were plated
+to look for viable bacterial colonies. 
+
+The viable colonies were sequenced, and the viable mutants are counted. 
+The end result was a count of each mutant in each host strain. These 
+counts are compared to the input counts and a ratio of ouput to input
+was calculated.
+
+Some Mtb strains grow well in some strains and not others. This
+variation can be mapped to the host genetics to look for QTL that 
+affect susceptibility to TB.
+
+Here we looked at these traits. The file I received had already been
+filtered for high-variance traits (named for the MTb mutation sequenced), 
+and these results focus on these traits. 
+
+These traits also include colony forming unit (CFU) counts in the lung 
+and spleen.
+
+## Project Setup
+
+Source all the code used in the project
+
+```{r some_params}
+scale.pheno <- TRUE
+remove.outlier <- TRUE
+high.var.pheno.only = FALSE #whether to include only high-variance traits in the analysis
+include.genetic.markers = FALSE
+```
+
+```{r source_code, error = FALSE, warning = FALSE, message = FALSE}
+is.interactive = FALSE
+#is.interactive = TRUE
+
+library("here")
+all.fun <- list.files(here("code"), full.names = TRUE, pattern = ".R")
+for(i in 1:length(all.fun)){source(all.fun[i])}
+```
+
+Load libraries used in this analysis.
+
+```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
+#load the libraries used in this project
+all.packages <- c("cape", "pheatmap", "qtl2", "knitr", "abind")
+load_libraries(all.packages)
+```
+
+```{r read_data}
+#read in phenotype data
+data.set <- read_cross2(here("data", "qtl2_data", "BxD.yaml"))
+pheno <- data.set$pheno
+n.ind <- nrow(pheno)
+gene.info <- readRDS(here("data", "RNASeq_gene_info.RData"))
+```
+
+```{r genoprobs}
+geno.probs <- calc_genoprob(data.set, map = data.set$pmap)
+map <- data.set$pmap
+K <- calc_kinship(geno.probs, type = "loco")
+```
+
+
+## Phenotype Exploration
+
+the plots below show where the strains fall in trait space and
+in trait PC space.
+
+```{r clin_pheno}
+par(xpd = TRUE, mfrow = c(1,2))
+plot(pheno[,1:2], type = "n", axes = FALSE, xlim = c(4,7), ylim = c(4,6.8),
+main = "Clinical Trait Plot")
+strain.col <- rep("black", nrow(pheno))
+strain.col[which(rownames(pheno) == "BXD51")] <- "red"
+text(pheno[,1:2], labels = rownames(pheno), col = strain.col)
+axis(1);axis(2)
+
+clin.decomp <- plot.decomp(pheno[,1:2], plot.results = FALSE)
+plot(clin.decomp$u[,1:2], type = "n", axes = FALSE, ylim = c(-0.5, 0.5), 
+xlim = c(-0.5, 0.5), xlab = "PC1", ylab = "PC2", main = "PC plot")
+text(clin.decomp$u[,1:2], labels = rownames(pheno), col = strain.col)
+axis(1);axis(2)
+```
+
+The strains have the following correlation matrix based on phenotype.
+BXD51 is a wicked outlier. Until we know more about that strain, 
+I am removing it from the analysis.
+
+```{r pheno_cor}
+pheno.cor <- cor(t(pheno))
+pheatmap(pheno.cor)
+```
+
+```{r outlier_removed}
+if(remove.outlier){
+  outlier.locale <- which(rownames(pheno) == "BXD51")
+  if(length(outlier.locale) > 0){
+    pheno <- pheno[-outlier.locale,]
+  }
+}
+pheno.cor <- cor(t(pheno))
+pheatmap(pheno.cor)
+```
+
+```{r high_var}
+trait.var <- apply(pheno, 2, var)
+var.thresh = summary(trait.var)[2]
+hist(trait.var, breaks = 100)
+abline(v = var.thresh, col = "red")
+high.var <- which(trait.var > var.thresh)
+if(high.var.pheno.only){
+  var.pheno <- pheno[,high.var]
+}else{
+  var.pheno <- pheno
+}
+```
+
+```{r scale_pheno}
+if(scale.pheno){
+  scaled.pheno <- apply(var.pheno, 2, scale)
+  rownames(scaled.pheno) <- rownames(var.pheno)
+}else{
+  scaled.pheno <- var.pheno
+}
+```
+
+The decomposition of the phenotype matrix is as follows.
+
+```{r pheno_decomp, fig.width = 6, fig.height = 6}
+pheno.decomp <- plot.decomp(t(scaled.pheno), plot.results = FALSE)
+trait.var.exp <- pheno.decomp$d^2/sum(pheno.decomp$d^2)
+plot(pheno.decomp$u[,1:2], main = "Phenotype Decomposition", 
+xlab = paste0("PC1 (", signif(trait.var.exp[1]*100, 2), "%)"),
+ylab = paste0("PC2 (", signif(trait.var.exp[2]*100, 2), "%)"),
+pch = 16)
+```
+
+```{r geno_pc, fig.height = 4, fig.width = 8}
+geno <- Reduce("cbind", lapply(geno.probs, function(x) x[,2,]))
+if(remove.outlier){
+  outlier.locale <- which(rownames(geno) == "BXD51")
+  if(length(outlier.locale) > 0){
+    geno <- geno[-outlier.locale,]
+  }
+}
+```
+
+## Construct CAPE object
+
+```{r run_cape_derived, eval = TRUE}
+clin.pheno <- scaled.pheno[,1:2]
+seq.pheno <- apply(scaled.pheno[,3:ncol(scaled.pheno)], 2, function(x) scale.between.vals(x, 0, 1))
+continuous.geno <- abind(1-seq.pheno, seq.pheno, along = 3)
+cont.geno <- aperm(continuous.geno, c(1,3,2))
+colnames(cont.geno) <- c("A", "B")
+
+if(include.genetic.markers){
+  geno.array <- abind(1-geno, geno, along = 3)
+  geno.perm <- aperm(geno.array, c(1,3,2))
+  colnames(geno.perm) <- c("A", "B")
+  full.geno <- abind(geno.perm, cont.geno, along = 3)
+  geno.chromosome <- unlist(sapply(1:length(map), function(x) rep(names(map)[x], length(map[[x]]))))
+  tn.chromosome <- rep(20, dim(cont.geno)[3])
+  chromosome <- c(geno.chromosome, tn.chromosome)
+  marker_num <- 1:dim(full.geno)[3]
+  geno_location <- unlist(map)
+  tn.location <- seq(length(geno_location) + 1, length(geno_location)+dim(cont.geno)[3], 1)
+  marker_location <- c(geno_location, tn.location)
+  ex.path <- here("results", "geno_TnSeq")
+}else{
+  full.geno <- cont.geno
+  chromosome = rep(1, dim(full.geno)[3])
+  marker_num <- 1:dim(full.geno)[3]
+  marker_location <- 1:dim(full.geno)[3]
+  ex.path <- here("results", "just_TnSeq")
+}
+
+names(dimnames(full.geno)) <- c("mouse", "allele", "locus")
+data.obj <- list("pheno" = clin.pheno, "geno_names" = dimnames(full.geno),
+"chromosome" = chromosome, "marker_num" = marker_num,
+"marker_location" = marker_location)
+
+
+#we used the original data set to create the 
+#cape object. Now we need to remove the outlier
+#if it was removed above.
+common.ind <- intersect(rownames(data.obj$pheno), rownames(pheno))
+common.pheno.locale <- match(common.ind, rownames(full.geno))
+data.obj$geno_names[[1]] <- data.obj$geno_names[[1]][common.pheno.locale]
+data.obj$pheno <- data.obj$pheno[common.pheno.locale,]
+
+cross.obj <- Cape$new(
+parameter_file = file.path(ex.path, "cape.parameters.yml"),
+results_path = ex.path,
+pheno = data.obj$pheno,
+chromosome = data.obj$chromosome,
+marker_num = data.obj$marker_num,
+marker_location = data.obj$marker_location,
+geno_names = data.obj$geno_names,
+geno = full.geno
+)
+    
+final.cross <- run_cape(pheno_obj = cross.obj, geno_obj = full.geno, p_or_q = 0.05,
+results_path = ex.path, param_file = file.path(ex.path, "cape.parameters.yml"))
+
+write.data.for.shiny(final.cross, full.geno, name = basename(ex.path), path = ex.path)
+```
