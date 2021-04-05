@@ -15,5 +15,5 @@ cd $SLURM_SUBMIT_DIR
 
 module load singularity
 
-singularity exec /projects/carter-lab/atyler/Containers/kinship_analysis_latest.sif R -e "rmarkdown::render(here::here('documents', 'BxD_CAPE.Rmd')"
+singularity exec /projects/carter-lab/atyler/Containers/kinship_analysis_latest.sif R -e "rmarkdown::render(here::here('documents', 'BxD_CAPE.Rmd'))"
 
