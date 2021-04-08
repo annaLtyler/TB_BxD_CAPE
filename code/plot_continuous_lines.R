@@ -41,7 +41,7 @@ pheno_name, marker1_label, marker2_label, prob = 0.95){
 	#show main effects if marker2 is NULL
 	if(is.null(marker2_vals)){
 		plot.with.model(marker1_vals, phenoV, xlab = marker1_label, 
-        main = pheno_name, ylab = pheno_name)
+        main = pheno_name, ylab = pheno_name, report = "cor.test")
 	}
 		
 	#if we have values for two markers

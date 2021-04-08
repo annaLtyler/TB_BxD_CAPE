@@ -64,15 +64,15 @@ plot_int_heat <- function(phenoV, marker1_vals, marker2_vals, pheno_name = NULL,
         
     marker1_bins <- bin_vector(signif(marker1_vals, 2), bins = marker_grid1)
     marker2_bins <- bin_vector(signif(marker2_vals, 2), bins = marker_grid2)
-         	
-	test_df <- cbind(phenoV, marker1_bins, marker2_bins)
+    #plot(marker1_bins, marker2_bins)
+
+	test_df <- data.frame(phenoV, marker1_bins, marker2_bins)
 	colnames(test_df) <- c(pheno_name, marker1_label, marker2_label)
-	test_df <- data.frame(test_df)
 	int.fmla <- paste(pheno_name, "~", marker1_label, "*", marker2_label)
     int.model <- lm(as.formula(int.fmla), data = test_df)
 	add.fmla <- paste(pheno_name, "~", marker1_label, "+", marker2_label)
 	add.model <- lm(as.formula(add.fmla), data = test_df)
-	#summary(model)
+	#summary(add.model)
 	
 	predict_grid <- cbind(rep(marker_grid1, length(marker_grid2)), rep(marker_grid2, 
 	each = length(marker_grid1)))
@@ -81,36 +81,40 @@ plot_int_heat <- function(phenoV, marker1_vals, marker2_vals, pheno_name = NULL,
 	
 	pred_data_add <- predict(add.model, newdata = predict_df, se.fit = TRUE)
 	pred_mat_add <- matrix(pred_data_add$fit, nrow = length(marker_grid2), 
-	ncol = length(marker_grid1), byrow = FALSE)
-	pred_cent_add <- pred_mat_add - mean(pred_mat_add)
+	ncol = length(marker_grid1), byrow = TRUE)
+	rownames(pred_mat_add) <- signif(marker_grid2, 2)
+	colnames(pred_mat_add) <- signif(marker_grid1, 2)
+	#pred_cent_add <- pred_mat_add - mean(pred_mat_add)
 	pred_add_se <- matrix(pred_data_add$se.fit, nrow = length(marker_grid2), 
-	ncol = length(marker_grid1), byrow = FALSE)
+	ncol = length(marker_grid1), byrow = TRUE)
 	
 	pred_data_int <- predict(int.model, newdata = predict_df, se.fit = TRUE)
 	pred_mat_int <- matrix(pred_data_int$fit, nrow = length(marker_grid2), 
-	ncol = length(marker_grid1), byrow = FALSE)
-	pred_cent_int <- pred_mat_int - mean(pred_mat_int)
+	ncol = length(marker_grid1), byrow = TRUE)
+	rownames(pred_mat_int) <- signif(marker_grid2, 2)
+	colnames(pred_mat_int) <- signif(marker_grid1, 2)
+	#pred_cent_int <- pred_mat_int - mean(pred_mat_int)
 	pred_int_se <- matrix(pred_data_int$se.fit, nrow = length(marker_grid2), 
-	ncol = length(marker_grid1), byrow = FALSE)
+	ncol = length(marker_grid1), byrow = TRUE)
 
-	pred_cent_diff <- pred_cent_int - pred_cent_add
+	#pred_cent_diff <- pred_cent_int - pred_cent_add
+	pred_diff <- pred_mat_int - pred_mat_add
 
-	all.min <- min(sapply(list(pred_cent_add-pred_add_se, pred_cent_int-pred_int_se, 
-	pred_cent_diff), min))
-
-	all.max <- max(sapply(list(pred_cent_add+pred_add_se, pred_cent_int+pred_int_se, 
-	pred_cent_diff), max))
+	all.min <- min(sapply(list(pred_mat_add-pred_add_se, pred_mat_int-pred_int_se, 
+	pred_diff), min))
+	all.max <- max(sapply(list(pred_mat_add+pred_add_se, pred_mat_int+pred_int_se, 
+	pred_diff), max))
 
 	par(mfrow = c(1,3))
 
-	image_with_text(pred_cent_add, col_text_rotation = 0, 
+	image_with_text(pred_mat_add[nrow(pred_mat_add):1,], col_text_rotation = 0, 
 	use_pheatmap_colors = TRUE, show_text = FALSE, ylab = marker2_label, 
 	xlab = marker1_label, global_color_scale = TRUE, global_min = all.min, 
 	global_max = all.max,main = "Additive")
 	#boxplot(pred_cent_add, main = "Marginal Effects of Source")
 	#boxplot(t(pred_cent_add), main = "Marginal Effects of Target")
 
-	image_with_text(pred_cent_int, col_text_rotation = 0, 
+	image_with_text(pred_mat_int[nrow(pred_mat_int):1,], col_text_rotation = 0, 
 	use_pheatmap_colors = TRUE, 
 	show_text = FALSE, ylab = marker2_label, xlab = marker1_label,
 	global_color_scale = TRUE, global_min = all.min, global_max = all.max, 
@@ -118,10 +122,10 @@ plot_int_heat <- function(phenoV, marker1_vals, marker2_vals, pheno_name = NULL,
 	#boxplot(pred_cent_int, main = "Marginal Effects of Source")
 	#boxplot(t(pred_cent_int), main = "Marginal Effects of Target")
 
-	image_with_text(pred_cent_diff, col_text_rotation = 0, use_pheatmap_colors = TRUE, 
-	show_text = FALSE, ylab = marker2_label, xlab = marker1_label, 
-	global_color_scale = TRUE, global_min = all.min, global_max = all.max,
-	main = "Difference")
+	image_with_text(pred_diff[nrow(pred_diff):1,], col_text_rotation = 0, 
+	use_pheatmap_colors = TRUE, show_text = FALSE, ylab = marker2_label, 
+	xlab = marker1_label, global_color_scale = TRUE, global_min = all.min, 
+	global_max = all.max, main = "Difference")
 
 	#image_with_text(pred_int_se, col_text_rotation = 0, use_pheatmap_colors = TRUE, 
 	#show_text = FALSE, ylab = marker2_label, xlab = marker1_label,

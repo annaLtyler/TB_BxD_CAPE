@@ -38,7 +38,8 @@ Load libraries used in this analysis.
 
 ```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
 #load the libraries used in this project
-all.packages <- c("cape", "pheatmap", "knitr", "interactions", "RColorBrewer")
+all.packages <- c("cape", "pheatmap", "knitr", "interactions", "RColorBrewer",
+"plotly")
 load_libraries(all.packages)
 ```
 
@@ -72,38 +73,117 @@ plot.null.dist(data.obj, pairscan.obj, here("results", exp.name))
 ## P value distribution
 
 The following plot shows the qq plot for the p value distribution.
-Very flat.
+It is somewhat depleted of small p values. What does that mean?
 
 ```{r pval_dist}
 qqunif.plot(as.numeric(data.obj$var_to_var_p_val[,"P_empirical"]))
 ```
 
 ## Effect plots
+We looked at some of specific interactions. To get some interactions,
+I used the empirical p values and set a cutoff that gave a reasonable
+number of interactions.
 
+The plot below shows the network at this selected level.
 
+```{r get_network}
 data.obj <- calc_p(data.obj, "none")
-p_or_q = 0.0001
+pvals <- as.numeric(data.obj$var_to_var_p_val[,"P_empirical"])
+#length(which(pvals < 0.00001))
+p_or_q = 0.00001
 data.obj <- get_network(data.obj, geno.obj, p_or_q)
 plot_network(data.obj)
+```
 
+The code below looks at individual interactions. I'm a little suspicious
+that we are detecting interactions where we don't have sufficient data to 
+detect them. Or at least, we cannot predict the phenotypes in some corners
+of the state space because of lack of data. There are so few individuals
+in this data set, that we cannot sufficiently search the trait space given
+a 2D "marker" space.
+
+The plot below shows an example of a "marker" pair plotted against
+each other with lines for the median, and 1 sd from the median.
+
+To get a good estimate of the interaction, we need to fill all
+those boxes. In most cases, we do not have enough data.
+
+```{r plot_example}
 var.inf <- write_variant_influences(data.obj, p_or_q = p_or_q, write_file = FALSE)
 show.cols <- c(1,4,10, 13)
 var.inf[,show.cols]
 
-for(idx in 1:nrow(var.inf)){
-  marker1 <- var.inf[idx, "Source"]
-  marker2 <- var.inf[idx, "Target"]
-  #print(var.inf[idx,show.cols,drop=FALSE])
+idx = 5
 
-  fig.list <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
-  plot_type = "l", prob = 0.90, sig.dig = 3)
-  fig.list[[1]][[2]] #phenotype 1 with Target on x axis
-  fig.list[[2]][[2]] #phenotype 2 with Target on x axis
+marker1 <- var.inf[idx, "Source"]
+#marker2 <- var.inf[idx, "Target"]
+marker2 <- var.inf[idx, "conditioning_marker"]
+#print(var.inf[idx,show.cols,drop=FALSE])
 
-  surface.fig <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
-  plot_type = "h", sig.dig = 3, bins_marker1 = 10, bins_marker2 = 10, 
-  separate_windows = TRUE)
-  surface.fig[[1]] #phenotype 1
-  surface.fig[[2]] #phenotype 2
-}
+marker_vals <- get_marker_covar(data.obj, geno.obj, c(marker1, marker2))
+marker_sd <- apply(marker_vals, 2, sd)
+marker_med <- apply(marker_vals, 2, median)
+plot(marker_vals)
+abline(v = c(marker_med[1], marker_med[1]-marker_sd[1], marker_med[1]+marker_sd[1]), 
+lty = c(1,2,2))
+abline(h = c(marker_med[2], marker_med[2]-marker_sd[2], marker_med[2]+marker_sd[2]), 
+lty = c(1,2,2))
+```
+
+The plots below show the main effects of the two selected markers for all traits.
+
+```{r effects}
+
+#main effect source
+plot_continuous_effects(data.obj, geno.obj, marker1, 
+plot_type = "l", prob = 0.90, sig.dig = 3, 
+separate_windows = is.interactive)
+
+#main effect target
+plot_continuous_effects(data.obj, geno.obj, marker2, 
+plot_type = "l", prob = 0.90, sig.dig = 3,
+separate_windows = is.interactive)
+```
+
+The plots below show the continuously valued interaction plots
+from the R package interactions.
+
+```{r interaction_plot1}
+fig.list <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
+plot_type = "l", prob = 0.90, sig.dig = 3)
+fig.list[[1]][[2]] #phenotype 1 with Target on x axis
+```
+
+```{r interaction_plot2}
+fig.list[[2]][[2]] #phenotype 2 with Target on x axis
+```
+
+The figures below show surface plots of the predicted trait values
+for all combinations of the continuously valued "markers."
+
+This is where I think we have to be particularly careful about our
+predictions. If we don't have data in a quadrant, we can't predict
+the trait there. 
+
+The heatmaps show the predicted trait values under an additive 
+model and under an interactive model. The final panel shows the
+difference between these two models. 
+
+```{r surface_heat, fig.width = 9, fig.height = 3}
+surface.fig <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
+plot_type = "h", sig.dig = 3, bins_marker1 = 3, bins_marker2 = 3, 
+separate_windows = is.interactive)
+```
+
+The surface plots below are a 3D, interactive version of the heat maps above.
+The predicted phenotype for each model is shown as a solid surface. The standard
+errors are shown as transparent surfaces above and below the predicted in the 
+same color.
+
+```{r surface1}
+surface.fig[[1]] #phenotype 1
+```
+
+```{r surface2}
+surface.fig[[2]] #phenotype 2
 ```

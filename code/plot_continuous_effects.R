@@ -24,14 +24,14 @@ plot_continuous_effects  <- function(data_obj, geno_obj, marker1, marker2 = NULL
     pheno <- get_pheno(data_obj, pheno_type, covar_names)
 	#==========================================
 
-
 	#==========================================
 	# get marker genotypes or covariate values 
 	# for plotting
 	#==========================================
 	marker_vals <- get_marker_covar(data_obj, geno_obj, c(marker1, marker2))
+	#plot(marker_vals)
 	marker_vals <- apply(marker_vals, 2, function(x) signif(x, sig.dig))
-
+	#plot(marker_vals)
 
    	#==========================================
 	# line up genotypes and phenotypes
