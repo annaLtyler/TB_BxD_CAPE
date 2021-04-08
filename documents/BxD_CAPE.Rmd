@@ -60,7 +60,7 @@ Source all the code used in the project
 scale.pheno <- TRUE
 remove.outlier <- TRUE
 high.var.pheno.only = FALSE #whether to include only high-variance traits in the analysis
-include.genetic.markers = FALSE
+include.genetic.markers = TRUE
 ```
 
 ```{r source_code, error = FALSE, warning = FALSE, message = FALSE}
@@ -76,7 +76,8 @@ Load libraries used in this analysis.
 
 ```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
 #load the libraries used in this project
-all.packages <- c("cape", "pheatmap", "qtl2", "knitr", "abind")
+all.packages <- c("cape", "pheatmap", "qtl2", "knitr", "abind", "interactions",
+"RColorBrewer")
 load_libraries(all.packages)
 ```
 
@@ -181,7 +182,7 @@ if(remove.outlier){
 
 ## Construct CAPE object
 
-```{r run_cape_derived, eval = TRUE}
+```{r run_cape_derived, eval = FALSE}
 clin.pheno <- scaled.pheno[,1:2]
 seq.pheno <- apply(scaled.pheno[,3:ncol(scaled.pheno)], 2, function(x) scale.between.vals(x, 0, 1))
 continuous.geno <- abind(1-seq.pheno, seq.pheno, along = 3)

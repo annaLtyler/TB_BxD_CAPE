@@ -26,7 +26,7 @@ locus:
 save_results:
  - true
 use_saved_results:
- - true
+ - false
 transform_to_phenospace:
  - true
 #================================================
@@ -52,7 +52,7 @@ num_alleles_in_pairscan:
 # Pairscan Parameters 
 #================================================
 max_pair_cor:
- - 1 
+ - 0.5
 pairscan_null_size:
  - 1500000
 

@@ -1,0 +1,109 @@
+---
+title: "Analysis of CAPE Results"
+author: Anna L Tyler
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document:
+    code_folding: hide
+    collapsed: no
+    toc: yes
+    toc_float: yes
+---
+
+
+## Introduction
+
+The purpose of this workflow is to explore the results from BxD_CAPE.Rmd.
+
+
+## Project Setup
+
+Source all the code used in the project
+
+```{r some_params}
+exp.name <- "just_TnSeq"
+#exp.name <- "geno_TnSeq"
+```
+
+```{r source_code, error = FALSE, warning = FALSE, message = FALSE}
+is.interactive = FALSE
+#is.interactive = TRUE
+
+library("here")
+all.fun <- list.files(here("code"), full.names = TRUE, pattern = ".R")
+for(i in 1:length(all.fun)){source(all.fun[i])}
+```
+
+Load libraries used in this analysis.
+
+```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
+#load the libraries used in this project
+all.packages <- c("cape", "pheatmap", "knitr", "interactions", "RColorBrewer")
+load_libraries(all.packages)
+```
+
+## Read in Results
+
+```{r check_null, eval = FALSE}
+data.obj <- readRDS(here("results", exp.name, "cross.RData"))
+geno.obj <- readRDS(here("results", exp.name, "cross_geno.RData"))
+pairscan.obj <- readRDS(here("results", exp.name, "cross_pairscan.RData"))
+```
+
+## Plot the CAPE Null
+
+There are no significant interactions in these data sets, which
+I was not expecting. Plot the observed and null distributions to 
+check for weirdness.
+
+This could be an effect of our high Pearson R threshold for the 
+interacting pieces. I am going to try again with a threshold of 
+0.5. This will help ensure that there is a better sampling of the
+space. 
+
+There are also very few individuals in this data set. Low n also 
+severely reduces our power to detect any interactions.
+
+```{r null_dist}
+plot.null.dist(data.obj, pairscan.obj, here("results", exp.name))
+#head(data.obj$var_to_var_p_val)
+```
+
+## P value distribution
+
+The following plot shows the qq plot for the p value distribution.
+Very flat.
+
+```{r pval_dist}
+qqunif.plot(as.numeric(data.obj$var_to_var_p_val[,"P_empirical"]))
+```
+
+## Effect plots
+
+
+data.obj <- calc_p(data.obj, "none")
+p_or_q = 0.0001
+data.obj <- get_network(data.obj, geno.obj, p_or_q)
+plot_network(data.obj)
+
+var.inf <- write_variant_influences(data.obj, p_or_q = p_or_q, write_file = FALSE)
+show.cols <- c(1,4,10, 13)
+var.inf[,show.cols]
+
+for(idx in 1:nrow(var.inf)){
+  marker1 <- var.inf[idx, "Source"]
+  marker2 <- var.inf[idx, "Target"]
+  #print(var.inf[idx,show.cols,drop=FALSE])
+
+  fig.list <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
+  plot_type = "l", prob = 0.90, sig.dig = 3)
+  fig.list[[1]][[2]] #phenotype 1 with Target on x axis
+  fig.list[[2]][[2]] #phenotype 2 with Target on x axis
+
+  surface.fig <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
+  plot_type = "h", sig.dig = 3, bins_marker1 = 10, bins_marker2 = 10, 
+  separate_windows = TRUE)
+  surface.fig[[1]] #phenotype 1
+  surface.fig[[2]] #phenotype 2
+}
+```
