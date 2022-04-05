@@ -75,8 +75,6 @@ Load libraries used in this analysis.
 
 ```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
 #load the libraries used in this project
-all.packages <- c("pheatmap", "qtl2", "knitr", "abind", "interactions", "RColorBrewer")
-load_libraries(all.packages)
 
 on.cluster <- as.logical(length(grep("carter", getwd())))
 if(on.cluster){
@@ -87,6 +85,10 @@ if(on.cluster){
   use.personal.library = FALSE
 }
 load_latest_cape(cape.dir, personal.library = use.personal.library)
+
+additional.packages <- c("pheatmap", "knitr", "interactions")
+load_libraries(additional.packages, personal.library = use.personal.library)
+
 ```
 
 ```{r read_data}
