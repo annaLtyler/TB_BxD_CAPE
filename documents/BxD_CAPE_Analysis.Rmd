@@ -21,8 +21,9 @@ The purpose of this workflow is to explore the results from BxD_CAPE.Rmd.
 Source all the code used in the project
 
 ```{r some_params}
-exp.name <- "just_TnSeq"
-#exp.name <- "geno_TnSeq"
+#exp.name <- "just_TnSeq"
+exp.name <- "geno_TnSeq"
+exp.name <- "just_geno"
 ```
 
 ```{r source_code, error = FALSE, warning = FALSE, message = FALSE}

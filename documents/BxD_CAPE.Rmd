@@ -58,8 +58,7 @@ Source all the code used in the project
 
 ```{r some_params}
 scale.pheno <- TRUE
-remove.outlier <- TRUE
-high.var.pheno.only = FALSE #whether to include only high-variance traits in the analysis
+remove.outlier <- FALSE
 include.genetic.markers = TRUE
 ```
 
@@ -83,10 +82,18 @@ load_libraries(all.packages)
 
 ```{r read_data}
 #read in phenotype data
-data.set <- read_cross2(here("data", "qtl2_data", "BxD.yaml"))
+data.set <- read_cross2(here("data", "BXD", "BxD.yaml"))
 pheno <- data.set$pheno
 n.ind <- nrow(pheno)
 gene.info <- readRDS(here("data", "RNASeq_gene_info.RData"))
+
+#add clinical phenotypes to phenotype matrix
+clin.pheno <- read.csv(here("data", "BxD", "BxD_20Sep2017_pheno_Plus_gt4.5TAs_noParents_rqtl2.csv"), 
+row.names = 1)
+common.ind <- intersect(rownames(pheno), rownames(clin.pheno))
+clin.idx <- match(common.ind, rownames(clin.pheno))
+pheno.idx <- match(common.ind, rownames(pheno))
+pheno <- cbind(clin.pheno[clin.idx,1:2], pheno[pheno.idx,])
 ```
 
 ```{r genoprobs}
@@ -132,28 +139,15 @@ if(remove.outlier){
   if(length(outlier.locale) > 0){
     pheno <- pheno[-outlier.locale,]
   }
-}
-pheno.cor <- cor(t(pheno))
-pheatmap(pheno.cor)
-```
-
-```{r high_var}
-trait.var <- apply(pheno, 2, var)
-var.thresh = summary(trait.var)[2]
-hist(trait.var, breaks = 100)
-abline(v = var.thresh, col = "red")
-high.var <- which(trait.var > var.thresh)
-if(high.var.pheno.only){
-  var.pheno <- pheno[,high.var]
-}else{
-  var.pheno <- pheno
+  pheno.cor <- cor(t(pheno))
+  pheatmap(pheno.cor)
 }
 ```
 
 ```{r scale_pheno}
 if(scale.pheno){
-  scaled.pheno <- apply(var.pheno, 2, scale)
-  rownames(scaled.pheno) <- rownames(var.pheno)
+  scaled.pheno <- apply(pheno, 2, rankZ)
+  rownames(scaled.pheno) <- rownames(pheno)
 }else{
   scaled.pheno <- var.pheno
 }
