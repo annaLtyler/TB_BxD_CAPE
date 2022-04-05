@@ -1,0 +1,529 @@
+num_non_recomb <- 5
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))
+l_theta_seq
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)
+l_theta_ind
+LOD <- log10(l_theta/l_theta_ind)
+plot(theta_vals, LOD, type = "b")
+plot(l_theta_seq, LOD, type = "b")
+l_theta_seq
+LOD
+l_theta_seq
+LOD <- log10(l_theta_seq/l_theta_ind)
+plot(l_theta_seq, LOD, type = "b")
+plot(l_theta_seq, LOD)
+theta_vals <- seq(0, 0.5, 0.01)
+theta_ind <- 0.5
+num_recomb <- 1
+num_non_recomb <- 15
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+#
+plot(l_theta_seq, LOD)
+l_theta_seq
+plot(theta_vals, LOD)
+theta_vals <- seq(0, 0.5, 0.01)#
+theta_ind <- 0.5#
+num_recomb <- 1#
+num_non_recomb <- 5#
+#
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+#
+plot(theta_vals, LOD)
+likely_theta <- theta_vals[which.max(LOD)]
+likely_theta
+abline(v = likely_theta)
+theta_vals <- seq(0, 0.5, 0.01)#
+theta_ind <- 0.5#
+num_recomb <- 3#
+num_non_recomb <- 8
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)
+plot(theta_vals, LOD)#
+#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta)
+theta_vals <- seq(0, 0.5, 0.01)#
+theta_ind <- 0.5#
+num_recomb <- 3#
+num_non_recomb <- 58#
+#
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+#
+plot(theta_vals, LOD)#
+#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta)
+seq_non_recomb <- seq(5, 50, 5)
+seq_non_recomb
+num_non_recomb = 50
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)
+plot(theta_vals, LOD)
+plot.new()#
+plot.window(xlim = c(0, 0.5), ylim = c(0, 12))#
+for(i in 1:length(seq_non_recomb)){#
+	l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, seq_non_recomb[i]))#
+	l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+	LOD <- log10(l_theta_seq/l_theta_ind)#
+	points(theta_vals, LOD, type = "l", col = i)#
+	likely_theta <- theta_vals[which.max(LOD)]#
+	abline(v = likely_theta, col = i)#
+}
+l_theta_ind <- pr_theta(theta_ind, num_recomb, seq_non_recomb[i])
+plot.new()#
+plot.window(xlim = c(0, 0.5), ylim = c(0, 12))#
+for(i in 1:length(seq_non_recomb)){#
+	l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, seq_non_recomb[i]))#
+	l_theta_ind <- pr_theta(theta_ind, num_recomb, seq_non_recomb[i])#
+	LOD <- log10(l_theta_seq/l_theta_ind)#
+	points(theta_vals, LOD, type = "l", col = i)#
+	likely_theta <- theta_vals[which.max(LOD)]#
+	abline(v = likely_theta, col = i)#
+}
+axis(1)
+axis(2)
+legend("topright", col = 1:length(seq_non_recomb), lty = 1, legend = seq_non_recomb, title = "Number of Non-Recombinant Individuals")
+plot.new()#
+plot.window(xlim = c(0, 0.5), ylim = c(0, 12))#
+for(i in 1:length(seq_non_recomb)){#
+	l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, seq_non_recomb[i]))#
+	l_theta_ind <- pr_theta(theta_ind, num_recomb, seq_non_recomb[i])#
+	LOD <- log10(l_theta_seq/l_theta_ind)#
+	points(theta_vals, LOD, type = "l", col = i)#
+	likely_theta <- theta_vals[which.max(LOD)]#
+	abline(v = likely_theta, col = i)#
+}#
+axis(1)#
+axis(2)#
+legend("topright", col = 1:length(seq_non_recomb), lty = 1, legend = seq_non_recomb)
+mtext(side = 2, "LOD", line = 2.5)
+mtext(side = 1, "Recombination Fraction", line = 2.5)
+plot.new()#
+plot.window(xlim = c(0, 0.5), ylim = c(0, 12))#
+for(i in 1:length(seq_non_recomb)){#
+	l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, seq_non_recomb[i]))#
+	l_theta_ind <- pr_theta(theta_ind, num_recomb, seq_non_recomb[i])#
+	LOD <- log10(l_theta_seq/l_theta_ind)#
+	points(theta_vals, LOD, type = "l", col = i)#
+	likely_theta <- theta_vals[which.max(LOD)]		#
+}#
+axis(1)#
+axis(2)#
+legend("topright", col = 1:length(seq_non_recomb), lty = 1, legend = seq_non_recomb)#
+mtext(side = 2, "LOD", line = 2.5)#
+mtext(side = 1, "Recombination Fraction", line = 2.5)
+abline(h = 3)
+theta_vals
+which.max(LOD)
+plot.new()#
+plot.window(xlim = c(0, 0.5), ylim = c(0, 12))#
+for(i in 1:length(seq_non_recomb)){#
+	l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, seq_non_recomb[i]))#
+	l_theta_ind <- pr_theta(theta_ind, num_recomb, seq_non_recomb[i])#
+	LOD <- log10(l_theta_seq/l_theta_ind)#
+	points(theta_vals, LOD, type = "l", col = i)#
+	likely_theta <- theta_vals[which.max(LOD)]#
+	abline(v = likely_theta, col = i)#
+}#
+axis(1)#
+axis(2)#
+legend("topright", col = 1:length(seq_non_recomb), lty = 1, legend = seq_non_recomb)#
+mtext(side = 2, "LOD", line = 2.5)#
+mtext(side = 1, "Recombination Fraction", line = 2.5)#
+abline(h = 3)
+theta_test <- 0.375
+l_theta_test <- pr_theta(theta_test, num_recomb, num_non_recomb)
+test_LOD <- log10(l_theta_test/l_theta_ind)
+test_LOD
+num_recomb <- 3
+num_non_recomb <- 5
+theta_test <- 0.375
+l_theta_test <- pr_theta(theta_test, num_recomb, num_non_recomb)
+test_LOD <- log10(l_theta_test/l_theta_ind)
+test_LOD
+theta_vals <- seq(0, 0.5, 0.01)#
+theta_ind <- 0.5#
+num_recomb <- 3#
+num_non_recomb <- 5
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)
+LOD
+theta_vals <- seq(0, 0.5, 0.01)#
+theta_ind <- 0.5#
+num_recomb <- 3#
+num_non_recomb <- 5#
+#
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+#
+theta_test <- 0.375#
+l_theta_test <- pr_theta(theta_test, num_recomb, num_non_recomb)#
+test_LOD <- log10(l_theta_test/l_theta_ind)#
+#
+plot(theta_vals, LOD)
+likely_theta <- theta_vals[which.max(LOD)]
+abline(v = likely_theta)
+seq_non_recomb <- seq(5, 50, 5)
+plot.new()#
+plot.window(xlim = c(0, 0.5), ylim = c(-10, 12))#
+for(i in 1:length(seq_non_recomb)){#
+	l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, seq_non_recomb[i]))#
+	l_theta_ind <- pr_theta(theta_ind, num_recomb, seq_non_recomb[i])#
+	LOD <- log10(l_theta_seq/l_theta_ind)#
+	points(theta_vals, LOD, type = "l", col = i)#
+	likely_theta <- theta_vals[which.max(LOD)]#
+	abline(v = likely_theta, col = i)#
+}#
+axis(1)#
+axis(2)#
+legend("topright", col = 1:length(seq_non_recomb), lty = 1, legend = seq_non_recomb)#
+mtext(side = 2, "LOD", line = 2.5)#
+mtext(side = 1, "Recombination Fraction", line = 2.5)#
+abline(h = 3)
+plot.new()#
+plot.window(xlim = c(0, 0.5), ylim = c(-5, 12))#
+for(i in 1:length(seq_non_recomb)){#
+	l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, seq_non_recomb[i]))#
+	l_theta_ind <- pr_theta(theta_ind, num_recomb, seq_non_recomb[i])#
+	LOD <- log10(l_theta_seq/l_theta_ind)#
+	points(theta_vals, LOD, type = "l", col = i)#
+	likely_theta <- theta_vals[which.max(LOD)]#
+	abline(v = likely_theta, col = i)#
+}#
+axis(1)#
+axis(2)#
+legend("topright", col = 1:length(seq_non_recomb), lty = 1, legend = seq_non_recomb)#
+mtext(side = 2, "LOD", line = 2.5)#
+mtext(side = 1, "Recombination Fraction", line = 2.5)#
+abline(h = 3)
+abline(h = 3, lty = 2)
+test_LOD
+theta_test <- 0.375#
+l_theta_test <- pr_theta(theta_test, num_recomb, num_non_recomb)#
+test_LOD <- log10(l_theta_test/l_theta_ind)#
+#
+plot(theta_vals, LOD)#
+#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta)#
+#
+seq_non_recomb <- seq(5, 50, 5)#
+#
+plot.new()#
+plot.window(xlim = c(0, 0.5), ylim = c(-5, 12))#
+for(i in 1:length(seq_non_recomb)){#
+	l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, seq_non_recomb[i]))#
+	l_theta_ind <- pr_theta(theta_ind, num_recomb, seq_non_recomb[i])#
+	LOD <- log10(l_theta_seq/l_theta_ind)#
+	points(theta_vals, LOD, type = "l", col = i)#
+	likely_theta <- theta_vals[which.max(LOD)]#
+	abline(v = likely_theta, col = i)#
+}#
+axis(1)#
+axis(2)#
+legend("topright", col = 1:length(seq_non_recomb), lty = 1, legend = seq_non_recomb)#
+mtext(side = 2, "LOD", line = 2.5)#
+mtext(side = 1, "Recombination Fraction", line = 2.5)#
+abline(h = 3, lty = 2)
+plot(theta_vals, LOD)
+theta_vals <- seq(0, 0.5, 0.01)#
+theta_ind <- 0.5#
+num_recomb <- 3#
+num_non_recomb <- 5
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+plot(theta_vals, LOD)
+likely_theta <- theta_vals[which.max(LOD)]
+abline(v = likely_theta, col = i)
+plot(theta_vals, LOD, xlab = expression("theta"))
+plot(theta_vals, LOD, xlab = expression(theta))
+likely_theta <- theta_vals[which.max(LOD)]
+abline(v = likely_theta, col = i)
+plot(theta_vals, LOD, xlab = expression(theta), cex.axis = 2)
+plot(theta_vals, LOD, xlab = expression(theta), cex.labels = 2)
+?plot
+plot(theta_vals, LOD, xlab = expression(theta), cex.lab = 2)
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)
+mtext("LOD", side = 2, cex = 2, line = 2.5)
+quartz(width = 4, height = 4)
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)
+quartz(width = 5, height = 5)#
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)
+theta_vals <- seq(0, 0.5, 0.01)#
+theta_ind <- 0.5#
+num_recomb <- 3#
+num_non_recomb <- 500
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+quartz(width = 5, height = 5)#
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)
+num_recomb <- 300
+num_non_recomb <- 500
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+quartz(width = 5, height = 5)#
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)
+likely_theta
+max(LOD)
+LOD
+num_recomb <- 3#
+num_non_recomb <- 5#
+#
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+quartz(width = 5, height = 5)#
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)
+max(LOD)
+num_recomb <- 2#
+num_non_recomb <- 6#
+#
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+quartz(width = 5, height = 5)#
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)
+num_recomb <- 5#
+num_non_recomb <- 3#
+#
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+quartz(width = 5, height = 5)#
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)
+theta_test <- 5/8
+l_theta_test <- pr_theta(theta_test, num_recomb, num_non_recomb)
+test_LOD <- log10(l_theta_test/l_theta_ind)
+test_LOD
+likely_theta
+num_recomb <- 2#
+num_non_recomb <- 6#
+#
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+quartz(width = 5, height = 5)#
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)#
+print(likely_theta)#
+print(max(LOD))
+num_recomb <- 5#
+num_non_recomb <- 3#
+#
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+quartz(width = 5, height = 5)#
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)#
+print(likely_theta)#
+print(max(LOD))
+theta_vals <- seq(0, 0.5, 0.01)#
+theta_ind <- 0.5#
+num_recomb <- 2#
+num_non_recomb <- 6#
+#
+l_theta_seq <- sapply(theta_vals, function(x) pr_theta(x, num_recomb, num_non_recomb))#
+l_theta_ind <- pr_theta(theta_ind, num_recomb, num_non_recomb)#
+LOD <- log10(l_theta_seq/l_theta_ind)#
+quartz(width = 5, height = 5)#
+plot(theta_vals, LOD, xlab = "", ylab = "", cex.axis = 1.5)#
+mtext(expression(theta), side = 1, cex = 2, line = 2.5)#
+mtext("LOD", side = 2, cex = 2, line = 2.5)#
+likely_theta <- theta_vals[which.max(LOD)]#
+abline(v = likely_theta, col = i)#
+print(likely_theta)#
+print(max(LOD))
+library(qtl)
+library(qtl2)
+grav2 <- read_cross2("~/my_data/grav2.yaml")
+grav2 <- read_cross2("https://kbroman.org/qtl2/assets/sampledata/grav2/grav2.zip")
+iron <- read_cross2( system.file("extdata", "iron.zip", package="qtl2") )
+map <- insert_pseudomarkers(iron$gmap, step=1)
+plot(map)
+pr <- calc_genoprob(iron, map, error_prob=0.002)
+pr <- calc_genoprob(iron, map, error_prob=0.002, cores=4)
+apr <- genoprob_to_alleleprob(pr)
+grid <- calc_grid(iron$gmap, step=1)
+pr_grid <- probs_to_grid(pr, grid)
+plot(pr_gris)
+plot(pr_grid)
+plot(pr_grid, map = map)
+plotMapp(map)
+plotMap(map)
+plotMap(iron$gmap)
+plotMap(iron$pmap)
+map <- insert_pseudomarkers(iron$gmap)
+plotMap(map)
+library(qtl2)
+citation(qtl2)
+citation("qtl2")
+library(qtl2)
+?est_herit
+?kinship
+??kinship
+?calc_kinship
+?est_herit
+library(qtl2)
+?est_herit
+page(est_herit)
+? calc_hsq_clean
+?? calc_hsq_clean
+page(calc_hsq_clean)
+page(qtl2::calc_hsq_clean)
+page(qtl2:::calc_hsq_clean)
+page(qtl2:::decomp_kinship)
+test <- read.delim("~/Downloads/MGIalleleQuery_20220304_100354.txt")
+str(test)
+test <- read.delim("~/Downloads/MGIalleleQuery_20220304_100354.txt", stringsAsFactors = FALSE)
+unique(test[,"Allele Type"])
+unique(test[,"Allele.Type"])
+allele.types <- unique(test[,"Allele.Type"])
+allele.list <- lapply(allele.types, function(x) test[which(test[,"Allele.Type"] == x),"Allele.Symbol"])
+allele.list
+names(allele.list) <- allele.type
+names(allele.list) <- allele.types
+allele.list
+allele.types
+sapply(allele.list, length)
+lapply(allele.list, head)
+allele.types
+allele.types <- allele.types[which(allele.types != "QTL")]
+allele.types <- unique(test[,"Allele.Type"])
+allele.types <- allele.types[which(allele.types != "QTL")] #filter out QTL (not genes)
+allele.list <- lapply(allele.types, function(x) test[which(test[,"Allele.Type"] == x),"Allele.Symbol"])
+sapply(allele.list, length)
+names(allele.list) <- allele.types
+sapply(allele.list, length)
+allele.genes <- lapply(allele.list, function(x) strsplit(x, "<", fixed = TRUE))
+lapply(allele.genes, head)
+allele.genes <- lapply(allele.list, function(x) sapply(strsplit(x, "<", fixed = TRUE), function(y) y[1]))
+allele.genes
+allele.genes <- lapply(allele.list, function(x) unique(sapply(strsplit(x, "<", fixed = TRUE), function(y) y[1])))
+allele.genes
+sapply(allele.genes, length)
+cat(allele.genes$Targeted, sep = "\n")
+?aperm
+?attr
+library(qtl2)
+?calc_genoprob
+library(qtl2)
+?calc_kinship
+?plot.scan1
+?scan1
+library(qtl2)
+?plot.scan1
+?arrows
+x <- 1:10
+y = 1:10
+plot(x,y)
+test <- text(x,y, 1:10, offset = 1)
+test <- text(x,y, 1:10, pos = 3, offset = 2)
+test
+?text
+x <- 1:10; y = seq(10, 100, 10)
+x
+y
+plot(x,y)
+total.x.len <- max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+total.x.len
+total.y.len <- max(y, na.rm = TRUE) - min(y, na.rm = TRUE)
+total.y.len
+x.offset <- 	total.x.len*(offset/100)
+offset = 1
+x.offset <- 	total.x.len*(offset/100)
+x.offset
+y.offset <- 	total.y.len*(offset/100)
+y.offset
+?predict
+?smooth.spline
+?legend
+library(RColorBrewer)
+??brewer_pal
+??display_brewer_pal
+??display_brewer_all
+?RColorBrewer
+?barplot
+library(qtl2)
+?plot_genes
+?page(plot_genes)
+page(plot_genes)
+?boxplot
+library(sva)
+citation("sva")
+?save
+citation("e1071")
+-log10(0.05)
+1.3^-10
+1.30103^-10
+-log10(0.07196592)
+-log10(2)
+-log10(0.01)
+citation("PMA")
+library(PMA)
+?CCA.permute
+?pheatmap
+library(pheatmap)
+?pheatmap
+lodthresh
+ann_colors = list(#
+    Time = c("white", "firebrick"),#
+    CellType = c(CT1 = "#1B9E77", CT2 = "#D95F02"),#
+    GeneClass = c(Path1 = "#7570B3", Path2 = "#E7298A", Path3 = "#66A61E")#
+)
+ann_colors[2]
+?library(PMA)
+setwd("~/Documents/Projects/TB/")
+list.files()
+setwd("TB_BxD_CAPE")
+list.files()
+setwd("documents/")
+list.files()

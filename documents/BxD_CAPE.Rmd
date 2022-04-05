@@ -75,9 +75,16 @@ Load libraries used in this analysis.
 
 ```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
 #load the libraries used in this project
-all.packages <- c("cape", "pheatmap", "qtl2", "knitr", "abind", "interactions",
-"RColorBrewer")
+all.packages <- c("pheatmap", "qtl2", "knitr", "abind", "interactions", "RColorBrewer")
 load_libraries(all.packages)
+
+on.cluster <- as.logical(length(grep("carter", getwd())))
+if(on.cluster){
+  cape.dir <- "/projects/carter-lab/atyler/Containers/cape"
+}else{
+  cape.dir <- "/Users/atyler/Documents/git_repositories/cape"
+}
+load_latest_cape(cape.dir)
 ```
 
 ```{r read_data}
