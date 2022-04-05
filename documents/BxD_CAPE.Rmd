@@ -76,7 +76,7 @@ Load libraries used in this analysis.
 ```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
 #load the libraries used in this project
 
-on.cluster <- as.logical(length(grep("carter", getwd())))
+on.cluster <- as.logical(length(grep("atyler", getwd())))
 if(on.cluster){
   cape.dir <- "/projects/carter-lab/atyler/Containers/cape"
   use.personal.library = TRUE
