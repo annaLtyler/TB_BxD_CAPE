@@ -81,10 +81,12 @@ load_libraries(all.packages)
 on.cluster <- as.logical(length(grep("carter", getwd())))
 if(on.cluster){
   cape.dir <- "/projects/carter-lab/atyler/Containers/cape"
+  use.personal.library = TRUE
 }else{
   cape.dir <- "/Users/atyler/Documents/git_repositories/cape"
+  use.personal.library = FALSE
 }
-load_latest_cape(cape.dir)
+load_latest_cape(cape.dir, personal.library = use.personal.library)
 ```
 
 ```{r read_data}
