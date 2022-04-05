@@ -3,14 +3,21 @@
 #If any are not installed, it installs them, and 
 #then loads all packages
 
-load_libraries <- function(package.names){
+load_libraries <- function(package.names, personal.library = FALSE){
 
+    dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
+    
     current.packages <- installed.packages()
     to.install <- setdiff(package.names, rownames(current.packages))
 
     if(length(to.install) > 0){
 
-        lib.loc <- .libPaths()[1]
+        if(personal.library){
+            lib.loc <- Sys.getenv("R_LIBS_USER")
+        }else{
+            lib.loc <- .libPaths()[1]
+        }
+
         for(i in 1:length(to.install)){
             install.packages(to.install[i], lib = lib.loc, 
             repos = "http://cran.us.r-project.org")
@@ -26,7 +33,7 @@ load_libraries <- function(package.names){
             repos = "http://cran.us.r-project.org")
 
             for(i in 1:length(to.install)){
-                BiocManager::install(to.install[i])
+                BiocManager::install(to.install[i], lib.loc = lib.loc)
             }
         }
     }

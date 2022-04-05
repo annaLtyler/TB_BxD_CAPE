@@ -1,14 +1,14 @@
 #This function loads a local version of cape code.
 
-load_latest_cape <- function(cape.dir){
+load_latest_cape <- function(cape.dir, personal.library = FALSE){
 
     source(here("code", "load_libraries.R"))
     needed.libraries <- c("here", "qtl2", "abind", "Matrix", "MASS", "regress", "igraph",
         "RColorBrewer", "R6", "yaml", "tools", "caTools", "propagate", "igraph",
         "qtl", "regress", "evd")
-    load_libraries(needed.libraries)
+    load_libraries(needed.libraries, personal.library = personal.library)
 
-    cape.fun <- list.files(cape.dir, pattern = ".R", full.names = TRUE)
+    cape.fun <- list.files(file.path(cape.dir, "R"), pattern = ".R", full.names = TRUE)
     for(i in 1:length(cape.fun)){source(cape.fun[i])}
 
 }
