@@ -76,7 +76,7 @@ Load libraries used in this analysis.
 ```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
 #load the libraries used in this project
 
-on.cluster <- as.logical(length(grep("atyler", getwd())))
+on.cluster <- !as.logical(length(grep("Documents", getwd())))
 if(on.cluster){
   cape.dir <- "/projects/carter-lab/atyler/Containers/cape"
   use.personal.library = TRUE
@@ -187,7 +187,7 @@ if(remove.outlier){
 
 ## Construct CAPE object
 
-```{r run_cape_derived, eval = FALSE}
+```{r run_cape_derived}
 clin.pheno <- scaled.pheno[,1:2]
 seq.pheno <- apply(scaled.pheno[,3:ncol(scaled.pheno)], 2, function(x) scale.between.vals(x, 0, 1))
 continuous.geno <- abind(1-seq.pheno, seq.pheno, along = 3)
