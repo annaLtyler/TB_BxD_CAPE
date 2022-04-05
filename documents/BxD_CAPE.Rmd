@@ -93,7 +93,7 @@ load_libraries(additional.packages, personal.library = use.personal.library)
 
 ```{r read_data}
 #read in phenotype data
-data.set <- read_cross2(here("data", "BXD", "BxD.yaml"))
+data.set <- read_cross2(here("data", "BxD", "BxD.yaml"))
 pheno <- data.set$pheno
 n.ind <- nrow(pheno)
 gene.info <- readRDS(here("data", "RNASeq_gene_info.RData"))
