@@ -76,8 +76,8 @@ Load libraries used in this analysis.
 ```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
 #load the libraries used in this project
 
-on.cluster <- !as.logical(length(grep("Documents", getwd())))
-if(on.cluster){
+on.laptop <- as.logical(length(grep("Documents", getwd())))
+if(!on.laptop){
   cape.dir <- "/projects/carter-lab/atyler/Containers/cape"
   use.personal.library = TRUE
 }else{
@@ -88,7 +88,6 @@ load_latest_cape(cape.dir, personal.library = use.personal.library)
 
 additional.packages <- c("pheatmap", "knitr", "interactions")
 load_libraries(additional.packages, personal.library = use.personal.library)
-
 ```
 
 ```{r read_data}
