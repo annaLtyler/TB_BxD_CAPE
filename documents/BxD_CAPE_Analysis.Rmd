@@ -22,7 +22,7 @@ Source all the code used in the project
 
 ```{r some_params}
 #exp.name <- "just_TnSeq"
-exp.name <- "geno_TnSeq"
+#exp.name <- "geno_TnSeq"
 exp.name <- "just_geno"
 ```
 
