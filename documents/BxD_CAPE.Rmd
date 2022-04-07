@@ -59,7 +59,7 @@ Source all the code used in the project
 ```{r some_params}
 scale.pheno <- TRUE
 remove.outlier <- FALSE
-include.genetic.markers = TRUE
+include.genetic.markers = FALSE
 ```
 
 ```{r source_code, error = FALSE, warning = FALSE, message = FALSE}
