@@ -50,7 +50,6 @@ load_latest_cape("~/Documents/git_repositories/cape")
 ```{r read_results}
 data.obj <- readRDS(here("results", exp.name, "cross.RDS"))
 geno.obj <- readRDS(here("results", exp.name, "cross_geno.RDS"))
-pairscan.obj <- readRDS(here("results", exp.name, "cross_pairscan.RDS"))
 ```
 
 ## P value distribution
@@ -58,31 +57,24 @@ pairscan.obj <- readRDS(here("results", exp.name, "cross_pairscan.RDS"))
 The following plot shows the qq plot for the p value distribution.
 It is somewhat depleted of moderately small p values. What does that mean?
 
-```{r pval_dist}
+```{r pval_dist, fig.width = 5, fig.height = 5}
 qqunif.plot(as.numeric(data.obj$var_to_var_p_val[,"P_empirical"]))
 ```
 
-## Effect plots
+## Network
 There are a few interactions between bugs and genetic markers.
 
-```{r get_network}
+```{r plot_network, fig.width = 5, fig.height = 5}
 plot_network(data.obj)
 ```
 
 ## Effects {.tabset .tabset-fade .tabset-pills}
 
-The code below looks at individual interactions. I'm a little suspicious
-that we are detecting interactions where we don't have sufficient data to 
-detect them. Or at least, we cannot predict the phenotypes in some corners
-of the state space because of lack of data. There are so few individuals
-in this data set, that we cannot sufficiently search the trait space given
-a 2D "marker" space.
+The code below looks at individual interactions. There are so few 
+animals that we will have to be careful here. 
 
-The plot below shows an example of a "marker" pair plotted against
-each other with lines for the median, and 1 sd from the median.
+The table below shows all significant interactions.
 
-To get a good estimate of the interaction, we need to fill all
-those boxes. In most cases, we do not have enough data.
 
 ```{r interaction_table}
 var.inf <- write_variant_influences(data.obj, write_file = FALSE)
@@ -96,38 +88,41 @@ for(i in 1:nrow(var.inf)){
   
   marker1 <- var.inf[i, "Source"]
   marker2 <- var.inf[i, "Target"]
+
   cat("###", marker1, "->", marker2, "{.tabset .tabset-fade .tabset-pills}\n")
 
   if(!is.na(var.inf[i,"conditioning_marker"])){
     marker2 <- var.inf[i,"conditioning_marker"]
   }
 
-  cat("#### Additive by Additive")
+  cat("#### Additive by Additive\n")
+
   plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = "b", 
     gen_model1 = "Additive", gen_model2 = "Additive")
   cat("\n\n")
 
-  cat("#### Recessive by Recessive")
+  cat("#### Recessive by Recessive\n")
   plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = "b", 
     gen_model1 = "Recessive", gen_model2 = "Recessive")
   cat("\n\n")
 
-  cat("#### Dominant by Dominant")
+  cat("#### Dominant by Dominant\n")
   plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = "b", 
     gen_model1 = "Dominant", gen_model2 = "Dominant")
   cat("\n\n")
 
-  cat("#### Surface")
+  cat("#### Surface\n")
   surface.fig <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
   plot_type = "h", sig.dig = 3, bins_marker1 = 25, bins_marker2 = 25, 
   separate_windows = is.interactive)
   cat("\n\n")
 
-  cat("#### Continuous")
+  cat("#### Continuous\n")
   fig.list <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
   plot_type = "l", prob = 0.90, sig.dig = 3)
-  fig.list[[1]][[2]] #phenotype 1 with Target on x axis
-  fig.list[[2]][[2]] #phenotype 2 with Target on x axis
+
+  print(fig.list[[1]][[2]]) #phenotype 1 with Target on x axis
+  print(fig.list[[2]][[2]]) #phenotype 2 with Target on x axis
 }
 
 
