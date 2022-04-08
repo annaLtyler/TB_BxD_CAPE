@@ -59,7 +59,7 @@ Source all the code used in the project
 ```{r some_params}
 scale.pheno <- TRUE
 remove.outlier <- FALSE
-include.genetic.markers = FALSE
+include.genetic.markers = TRUE
 ```
 
 ```{r source_code, error = FALSE, warning = FALSE, message = FALSE}
@@ -199,7 +199,10 @@ if(include.genetic.markers){
   colnames(geno.perm) <- c("A", "B")
   full.geno <- abind(geno.perm, cont.geno, along = 3)
   geno.chromosome <- unlist(sapply(1:length(map), function(x) rep(names(map)[x], length(map[[x]]))))
-  tn.chromosome <- rep(20, dim(cont.geno)[3])
+  #all animals are male, so we can include the X chromosome. Change X to 20 and make the TnSeq
+  #mutants chr 21
+  geno.chromosome[which(geno.chromosome == "X")] <- 20
+  tn.chromosome <- rep(21, dim(cont.geno)[3])
   chromosome <- c(geno.chromosome, tn.chromosome)
   marker_num <- 1:dim(full.geno)[3]
   geno_location <- unlist(map)
