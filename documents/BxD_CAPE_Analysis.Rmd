@@ -22,8 +22,8 @@ Source all the code used in the project
 
 ```{r some_params}
 #exp.name <- "just_TnSeq"
-#exp.name <- "geno_TnSeq"
-exp.name <- "just_geno"
+exp.name <- "geno_TnSeq"
+#exp.name <- "just_geno"
 ```
 
 ```{r source_code, error = FALSE, warning = FALSE, message = FALSE}
@@ -39,62 +39,37 @@ Load libraries used in this analysis.
 
 ```{r setup_libraries, error = FALSE, warning = FALSE, message = FALSE}
 #load the libraries used in this project
-all.packages <- c("cape", "pheatmap", "knitr", "interactions", "RColorBrewer",
-"plotly")
+all.packages <- c("pheatmap", "knitr", "interactions", "RColorBrewer", "plotly")
 load_libraries(all.packages)
+
+load_latest_cape("~/Documents/git_repositories/cape")
 ```
 
 ## Read in Results
 
-```{r check_null, eval = FALSE}
-data.obj <- readRDS(here("results", exp.name, "cross.RData"))
-geno.obj <- readRDS(here("results", exp.name, "cross_geno.RData"))
-pairscan.obj <- readRDS(here("results", exp.name, "cross_pairscan.RData"))
-```
-
-## Plot the CAPE Null
-
-There are no significant interactions in these data sets, which
-I was not expecting. Plot the observed and null distributions to 
-check for weirdness.
-
-This could be an effect of our high Pearson R threshold for the 
-interacting pieces. I am going to try again with a threshold of 
-0.5. This will help ensure that there is a better sampling of the
-space. 
-
-There are also very few individuals in this data set. Low n also 
-severely reduces our power to detect any interactions.
-
-```{r null_dist}
-plot.null.dist(data.obj, pairscan.obj, here("results", exp.name))
-#head(data.obj$var_to_var_p_val)
+```{r read_results}
+data.obj <- readRDS(here("results", exp.name, "cross.RDS"))
+geno.obj <- readRDS(here("results", exp.name, "cross_geno.RDS"))
+pairscan.obj <- readRDS(here("results", exp.name, "cross_pairscan.RDS"))
 ```
 
 ## P value distribution
 
 The following plot shows the qq plot for the p value distribution.
-It is somewhat depleted of small p values. What does that mean?
+It is somewhat depleted of moderately small p values. What does that mean?
 
 ```{r pval_dist}
 qqunif.plot(as.numeric(data.obj$var_to_var_p_val[,"P_empirical"]))
 ```
 
 ## Effect plots
-We looked at some of specific interactions. To get some interactions,
-I used the empirical p values and set a cutoff that gave a reasonable
-number of interactions.
-
-The plot below shows the network at this selected level.
+There are a few interactions between bugs and genetic markers.
 
 ```{r get_network}
-data.obj <- calc_p(data.obj, "none")
-pvals <- as.numeric(data.obj$var_to_var_p_val[,"P_empirical"])
-#length(which(pvals < 0.00001))
-p_or_q = 0.00001
-data.obj <- get_network(data.obj, geno.obj, p_or_q)
 plot_network(data.obj)
 ```
+
+## Effects {.tabset .tabset-fade .tabset-pills}
 
 The code below looks at individual interactions. I'm a little suspicious
 that we are detecting interactions where we don't have sufficient data to 
@@ -109,82 +84,52 @@ each other with lines for the median, and 1 sd from the median.
 To get a good estimate of the interaction, we need to fill all
 those boxes. In most cases, we do not have enough data.
 
-```{r plot_example}
-var.inf <- write_variant_influences(data.obj, p_or_q = p_or_q, write_file = FALSE)
+```{r interaction_table}
+var.inf <- write_variant_influences(data.obj, write_file = FALSE)
 show.cols <- c(1,4,10, 13)
-var.inf[,show.cols]
-
-idx = 5
-
-marker1 <- var.inf[idx, "Source"]
-#marker2 <- var.inf[idx, "Target"]
-marker2 <- var.inf[idx, "conditioning_marker"]
-#print(var.inf[idx,show.cols,drop=FALSE])
-
-marker_vals <- get_marker_covar(data.obj, geno.obj, c(marker1, marker2))
-marker_sd <- apply(marker_vals, 2, sd)
-marker_med <- apply(marker_vals, 2, median)
-plot(marker_vals)
-abline(v = c(marker_med[1], marker_med[1]-marker_sd[1], marker_med[1]+marker_sd[1]), 
-lty = c(1,2,2))
-abline(h = c(marker_med[2], marker_med[2]-marker_sd[2], marker_med[2]+marker_sd[2]), 
-lty = c(1,2,2))
+kable(var.inf[,show.cols])
 ```
 
-The plots below show the main effects of the two selected markers for all traits.
 
-```{r effects}
+```{r plot_effects, results = "asis"}
+for(i in 1:nrow(var.inf)){
+  
+  marker1 <- var.inf[i, "Source"]
+  marker2 <- var.inf[i, "Target"]
+  cat("###", marker1, "->", marker2, "{.tabset .tabset-fade .tabset-pills}\n")
 
-#main effect source
-plot_continuous_effects(data.obj, geno.obj, marker1, 
-plot_type = "l", prob = 0.90, sig.dig = 3, 
-separate_windows = is.interactive)
+  if(!is.na(var.inf[i,"conditioning_marker"])){
+    marker2 <- var.inf[i,"conditioning_marker"]
+  }
 
-#main effect target
-plot_continuous_effects(data.obj, geno.obj, marker2, 
-plot_type = "l", prob = 0.90, sig.dig = 3,
-separate_windows = is.interactive)
+  cat("#### Additive by Additive")
+  plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = "b", 
+    gen_model1 = "Additive", gen_model2 = "Additive")
+  cat("\n\n")
+
+  cat("#### Recessive by Recessive")
+  plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = "b", 
+    gen_model1 = "Recessive", gen_model2 = "Recessive")
+  cat("\n\n")
+
+  cat("#### Dominant by Dominant")
+  plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = "b", 
+    gen_model1 = "Dominant", gen_model2 = "Dominant")
+  cat("\n\n")
+
+  cat("#### Surface")
+  surface.fig <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
+  plot_type = "h", sig.dig = 3, bins_marker1 = 25, bins_marker2 = 25, 
+  separate_windows = is.interactive)
+  cat("\n\n")
+
+  cat("#### Continuous")
+  fig.list <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
+  plot_type = "l", prob = 0.90, sig.dig = 3)
+  fig.list[[1]][[2]] #phenotype 1 with Target on x axis
+  fig.list[[2]][[2]] #phenotype 2 with Target on x axis
+}
+
+
 ```
 
-The plots below show the continuously valued interaction plots
-from the R package interactions.
-
-```{r interaction_plot1}
-fig.list <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
-plot_type = "l", prob = 0.90, sig.dig = 3)
-fig.list[[1]][[2]] #phenotype 1 with Target on x axis
-```
-
-```{r interaction_plot2}
-fig.list[[2]][[2]] #phenotype 2 with Target on x axis
-```
-
-The figures below show surface plots of the predicted trait values
-for all combinations of the continuously valued "markers."
-
-This is where I think we have to be particularly careful about our
-predictions. If we don't have data in a quadrant, we can't predict
-the trait there. 
-
-The heatmaps show the predicted trait values under an additive 
-model and under an interactive model. The final panel shows the
-difference between these two models. 
-
-```{r surface_heat, fig.width = 9, fig.height = 3}
-surface.fig <- plot_continuous_effects(data.obj, geno.obj, marker1, marker2, 
-plot_type = "h", sig.dig = 3, bins_marker1 = 3, bins_marker2 = 3, 
-separate_windows = is.interactive)
-```
-
-The surface plots below are a 3D, interactive version of the heat maps above.
-The predicted phenotype for each model is shown as a solid surface. The standard
-errors are shown as transparent surfaces above and below the predicted in the 
-same color.
-
-```{r surface1}
-surface.fig[[1]] #phenotype 1
-```
-
-```{r surface2}
-surface.fig[[2]] #phenotype 2
-```
