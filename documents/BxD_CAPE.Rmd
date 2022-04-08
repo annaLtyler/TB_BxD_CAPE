@@ -245,5 +245,5 @@ geno = full.geno
 final.cross <- run_cape(pheno_obj = cross.obj, geno_obj = full.geno, p_or_q = 0.05,
 results_path = ex.path, param_file = file.path(ex.path, "cape.parameters.yml"))
 
-write.data.for.shiny(final.cross, full.geno, name = basename(ex.path), path = ex.path)
+#write.data.for.shiny(final.cross, full.geno, name = basename(ex.path), path = ex.path)
 ```

@@ -43,7 +43,7 @@ singlescan_perm:
 marker_selection_method:
  - top_effects
 peak_density:
- - 0.5 
+ - 0.1
 tolerance:
  - 5 
 num_alleles_in_pairscan:
