@@ -52,15 +52,6 @@ data.obj <- readRDS(here("results", exp.name, "cross.RDS"))
 geno.obj <- readRDS(here("results", exp.name, "cross_geno.RDS"))
 ```
 
-## P value distribution
-
-The following plot shows the qq plot for the p value distribution.
-It is somewhat depleted of moderately small p values. What does that mean?
-
-```{r pval_dist, fig.width = 5, fig.height = 5}
-qqunif.plot(as.numeric(data.obj$var_to_var_p_val[,"P_empirical"]))
-```
-
 ## Network
 There are a few interactions between bugs and genetic markers.
 
@@ -84,31 +75,32 @@ kable(var.inf[,show.cols])
 
 
 ```{r plot_effects, results = "asis"}
+plot.type = "l"
 for(i in 1:nrow(var.inf)){
   
   marker1 <- var.inf[i, "Source"]
   marker2 <- var.inf[i, "Target"]
 
-  cat("###", marker1, "->", marker2, "{.tabset .tabset-fade .tabset-pills}\n")
-
   if(!is.na(var.inf[i,"conditioning_marker"])){
     marker2 <- var.inf[i,"conditioning_marker"]
   }
 
+  cat("###", marker1, "->", marker2, "{.tabset .tabset-fade .tabset-pills}\n")
+
   cat("#### Additive by Additive\n")
 
-  plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = "b", 
-    gen_model1 = "Additive", gen_model2 = "Additive")
+  plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = plot.type, 
+    gen_model1 = "Additive", gen_model2 = "Additive", error_bars = "se")
   cat("\n\n")
 
   cat("#### Recessive by Recessive\n")
-  plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = "b", 
-    gen_model1 = "Recessive", gen_model2 = "Recessive")
+  plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = plot.type, 
+    gen_model1 = "Recessive", gen_model2 = "Recessive", error_bars = "se")
   cat("\n\n")
 
   cat("#### Dominant by Dominant\n")
-  plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = "b", 
-    gen_model1 = "Dominant", gen_model2 = "Dominant")
+  plot_effects(data.obj, geno.obj, marker1, marker2, plot_type = plot.type, 
+    gen_model1 = "Dominant", gen_model2 = "Dominant", error_bars = "se")
   cat("\n\n")
 
   cat("#### Surface\n")
@@ -123,6 +115,8 @@ for(i in 1:nrow(var.inf)){
 
   print(fig.list[[1]][[2]]) #phenotype 1 with Target on x axis
   print(fig.list[[2]][[2]]) #phenotype 2 with Target on x axis
+
+  cat("\n\n")
 }
 
 
